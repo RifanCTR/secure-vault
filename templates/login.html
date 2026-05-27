@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Secure Vault</title>
+
+<style>
+
+body{
+    background:#0d0d0d;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    font-family:Arial;
+}
+
+.box{
+    background:#1a1a1a;
+    padding:30px;
+    border-radius:15px;
+    width:300px;
+    text-align:center;
+    box-shadow:0 0 20px #000;
+}
+
+h1{
+    color:white;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+    margin-top:15px;
+    background:#2b2b2b;
+    color:white;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:#00ff88;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.error{
+    color:red;
+    margin-top:10px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="box">
+
+<h1>[ passwd ]</h1>
+
+<form method="POST">
+
+<input type="password" name="password" placeholder="Masukkan password">
+
+<button type="submit">ENTER</button>
+
+{% if error %}
+<p class="error">⚠ password anda salah</p>
+{% endif %}
+
+</form>
+
+</div>
+
+</body>
+</html>

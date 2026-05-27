@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>trial website</h1>
+
+<div class="inputBox">
+
+<input
+id="name"
+placeholder="link name">
+
+<input
+id="url"
+placeholder="https://user.com">
+
+<button onclick="addLink()">
+Add
+</button>
+
+</div>
+
+<input
+id="search"
+placeholder="Search Links..."
+onkeyup="renderLinks()"
+>
+
+<div id="database"></div>
+
+</div>
+
+<script
+src="{{ url_for('static', filename='script.js') }}">
+</script>
+
+</body>
+
+</html>

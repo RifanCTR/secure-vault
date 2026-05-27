@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Verification</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+background:#dfe5ec;
+}
+
+/* BOX */
+
+.box{
+
+width:90%;
+max-width:320px;
+
+padding:28px;
+
+border-radius:24px;
+
+background:#dfe5ec;
+
+box-shadow:
+10px 10px 20px #c3c9cf,
+-10px -10px 20px #fbffff;
+
+text-align:center;
+}
+
+/* TITLE */
+
+h1{
+color:#5f6770;
+font-size:30px;
+font-weight:600;
+margin-bottom:25px;
+letter-spacing:2px;
+}
+
+/* INPUT */
+
+input{
+
+width:100%;
+
+padding:16px;
+
+border:none;
+
+outline:none;
+
+border-radius:18px;
+
+background:#dfe5ec;
+
+box-shadow:
+inset 6px 6px 12px #c8ced4,
+inset -6px -6px 12px #f6fcff;
+
+font-size:15px;
+
+margin-top:14px;
+}
+
+/* BUTTON */
+
+button{
+
+width:100%;
+
+padding:16px;
+
+margin-top:18px;
+
+border:none;
+
+border-radius:18px;
+
+background:#dfe5ec;
+
+font-size:16px;
+
+font-weight:600;
+
+cursor:pointer;
+
+color:#5f6770;
+
+box-shadow:
+6px 6px 12px #c3c9cf,
+-6px -6px 12px #fbffff;
+
+transition:0.2s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+button:active{
+box-shadow:
+inset 4px 4px 8px #c3c9cf,
+inset -4px -4px 8px #fbffff;
+}
+
+/* ERROR */
+
+.error{
+margin-top:14px;
+color:#d14b4b;
+font-size:14px;
+}
+
+/* STATUS */
+
+#status-text{
+margin-top:14px;
+font-size:14px;
+color:#6c7480;
+display:none;
+}
+
+/* TIMER */
+
+#cooldown-text{
+margin-top:10px;
+font-size:14px;
+color:#6c7480;
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>CODE</h1>
+
+<form method="POST">
+
+<input
+type="password"
+name="code"
+placeholder="Enter security code">
+
+<button type="submit">
+ENTER
+</button>
+
+</form>
+
+<form id="access-form">
+
+<button
+class="access"
+type="submit">
+REQUEST ACCESS
+</button>
+
+</form>
+
+<div id="status-text">
+Waiting for administrator approval...
+</div>
+
+<div id="cooldown-text">
+You can request access again in
+<span id="countdown">60</span>s
+</div>
+
+{% if error %}
+<p class="error">
+Invalid verification code
+</p>
+{% endif %}
+
+</div>
+
+<script>
+
+const accessForm =
+document.getElementById("access-form")
+
+const accessButton =
+accessForm.querySelector("button")
+
+const cooldownText =
+document.getElementById("cooldown-text")
+
+const countdown =
+document.getElementById("countdown")
+
+const statusText =
+document.getElementById("status-text")
+
+let cooldown = false
+
+accessForm.addEventListener("submit", async (e)=>{
+
+    e.preventDefault()
+
+    if(cooldown){
+        return
+    }
+
+    cooldown = true
+
+    accessButton.disabled = true
+
+    accessButton.style.opacity = "0.6"
+
+    cooldownText.style.display = "block"
+
+    statusText.style.display = "block"
+
+    let seconds = 60
+
+    countdown.innerText = seconds
+
+    const timer = setInterval(()=>{
+
+        seconds--
+
+        countdown.innerText = seconds
+
+        if(seconds <= 0){
+
+            clearInterval(timer)
+
+            cooldown = false
+
+            accessButton.disabled = false
+
+            accessButton.style.opacity = "1"
+
+            cooldownText.style.display = "none"
+
+        }
+
+    },1000)
+
+    const response =
+    await fetch("/request-access",{
+        method:"POST"
+    })
+
+    const data =
+    await response.json()
+
+    const sessionId =
+    data.session_id
+
+    const checker = setInterval(async ()=>{
+
+        const check =
+        await fetch(`/check-session/${sessionId}`)
+
+        const result =
+        await check.json()
+
+        if(result.status == "approved"){
+
+            clearInterval(checker)
+
+            window.location.href = "/granted"
+
+        }
+
+        if(result.status == "denied"){
+
+            clearInterval(checker)
+
+            window.location.href = "/intruder"
+
+        }
+
+    },2000)
+
+})
+
+</script>
+
+</body>
+</html>
